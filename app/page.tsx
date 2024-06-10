@@ -73,7 +73,7 @@ export default function Home() {
   };
 
   return (
-    <main className="flex min-h-screen flex-col items-center gap-4 py-8 px-4">
+    <main className="flex min-h-screen flex-col items-center gap-4 py-8 px-8">
       <Form {...form}>
         <form
           onSubmit={form.handleSubmit(onSubmit)}
