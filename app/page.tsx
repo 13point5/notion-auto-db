@@ -77,7 +77,7 @@ export default function Home() {
       <Form {...form}>
         <form
           onSubmit={form.handleSubmit(onSubmit)}
-          className="space-y-6 border rounded-md p-8"
+          className="space-y-6 border rounded-md p-8 w-full max-w-xs sm:max-w-md lg:max-w-lg xl:max-w-2xl"
         >
           <h1 className="text-3xl font-bold tracking-tight text-center">
             Notion AutoDB
