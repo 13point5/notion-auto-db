@@ -39,14 +39,14 @@ function extractDbIdFromUrl(url: string): string | null {
 export async function POST(request: Request) {
   const req = await request.json();
 
-  const { databaseUrl, openAiKey, notionKey, model, url } = req;
+  const { databaseUrl, openaiKey, notionKey, model, url } = req;
 
   const databaseId = extractDbIdFromUrl(databaseUrl);
 
   if (!databaseId) throw new Error("Couldn't extract Notion database ID");
 
   const openaiClient = new OpenAI({
-    apiKey: openAiKey,
+    apiKey: openaiKey,
   });
 
   const instructorClient = Instructor({
