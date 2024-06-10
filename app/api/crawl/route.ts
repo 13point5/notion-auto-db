@@ -88,6 +88,11 @@ export async function POST(request: Request) {
       schema[prop.name] = z.boolean().nullish();
     }
 
+    if (prop.type === "select") {
+      const options = prop.select.options.map((item) => item.name);
+      schema[prop.name] = z.enum([options[0], ...options.slice(1)]);
+    }
+
     if (prop.type === "multi_select") {
       const options = prop.multi_select.options.map((item) => item.name);
       schema[prop.name] = z.array(z.enum([options[0], ...options.slice(1)]));
@@ -164,6 +169,15 @@ export async function POST(request: Request) {
       row.properties[name] = {
         type,
         [type]: Boolean(value),
+      };
+    }
+
+    if (type === "select") {
+      row.properties[name] = {
+        type,
+        [type]: {
+          name: value,
+        },
       };
     }
 
