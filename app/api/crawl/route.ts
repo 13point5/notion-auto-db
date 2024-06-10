@@ -97,6 +97,11 @@ export async function POST(request: Request) {
       const options = prop.multi_select.options.map((item) => item.name);
       schema[prop.name] = z.array(z.enum([options[0], ...options.slice(1)]));
     }
+
+    if (prop.type === "status") {
+      const options = prop.status.options.map((item) => item.name);
+      schema[prop.name] = z.enum([options[0], ...options.slice(1)]);
+    }
   });
 
   const zodSchema = z.object(schema);
@@ -173,6 +178,15 @@ export async function POST(request: Request) {
     }
 
     if (type === "select") {
+      row.properties[name] = {
+        type,
+        [type]: {
+          name: value,
+        },
+      };
+    }
+
+    if (type === "status") {
       row.properties[name] = {
         type,
         [type]: {
