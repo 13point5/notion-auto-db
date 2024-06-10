@@ -79,9 +79,15 @@ export default function Home() {
           onSubmit={form.handleSubmit(onSubmit)}
           className="space-y-6 border rounded-md p-8 w-full sm:max-w-md lg:max-w-lg xl:max-w-2xl"
         >
-          <h1 className="text-3xl font-bold tracking-tight text-center">
-            Notion AutoDB
-          </h1>
+          <div className="space-y-2">
+            <h1 className="text-3xl font-bold tracking-tight text-center">
+              Notion AutoDB
+            </h1>
+            <p className="text-muted-foreground text-sm text-center">
+              Automatically Extract and Add data from websites to your Notion
+              Database
+            </p>
+          </div>
 
           <FormField
             control={form.control}
