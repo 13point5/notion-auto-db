@@ -14,7 +14,8 @@ const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
   title: "Notion AutoDB",
-  description: "Automatically add websites to your DB with columns extracted",
+  description:
+    "Automatically Extract and Add data from websites to your Notion Database",
 };
 
 export default function RootLayout({
