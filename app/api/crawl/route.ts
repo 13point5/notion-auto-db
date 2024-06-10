@@ -39,7 +39,7 @@ function extractDbIdFromUrl(url: string): string | null {
 export async function POST(request: Request) {
   const req = await request.json();
 
-  const { databaseUrl, openAiKey, notionKey } = req;
+  const { databaseUrl, openAiKey, notionKey, model, url } = req;
 
   const databaseId = extractDbIdFromUrl(databaseUrl);
 
@@ -59,7 +59,7 @@ export async function POST(request: Request) {
   });
 
   const [pageContent, notionDb] = await Promise.all([
-    getUrlContent(req.url),
+    getUrlContent(url),
     notion.databases.retrieve({
       database_id: databaseId,
     }),
@@ -80,6 +80,14 @@ export async function POST(request: Request) {
       schema[prop.name] = z.string();
     }
 
+    if (prop.type === "number") {
+      schema[prop.name] = z.number();
+    }
+
+    if (prop.type === "checkbox") {
+      schema[prop.name] = z.boolean().nullish();
+    }
+
     if (prop.type === "multi_select") {
       const options = prop.multi_select.options.map((item) => item.name);
       schema[prop.name] = z.array(z.enum([options[0], ...options.slice(1)]));
@@ -90,12 +98,12 @@ export async function POST(request: Request) {
 
   const res = await instructorClient.chat.completions.create({
     messages: [{ role: "user", content: pageContent }],
-    model: "gpt-3.5-turbo",
+    model,
     response_model: {
       schema: zodSchema,
       name: title,
     },
-    max_retries: 3,
+    max_retries: 5,
   });
 
   const row: CreatePageParameters = {
@@ -142,6 +150,20 @@ export async function POST(request: Request) {
       row.properties[name] = {
         type,
         [type]: value,
+      };
+    }
+
+    if (type === "number") {
+      row.properties[name] = {
+        type,
+        [type]: value,
+      };
+    }
+
+    if (type === "checkbox") {
+      row.properties[name] = {
+        type,
+        [type]: Boolean(value),
       };
     }
 

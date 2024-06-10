@@ -12,6 +12,13 @@ import {
   FormLabel,
   FormMessage,
 } from "@/components/ui/form";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { Input } from "@/components/ui/input";
 import { zodResolver } from "@hookform/resolvers/zod";
 import Link from "next/link";
@@ -19,12 +26,14 @@ import { useForm } from "react-hook-form";
 
 import { z } from "zod";
 import { useState } from "react";
-import { Separator } from "@/components/ui/separator";
+
+const models = ["gpt-3.5-turbo", "gpt-4-turbo", "gpt-4o"] as const;
+const ModelsEnum = z.enum(models);
 
 const formSchema = z.object({
   databaseUrl: z.string().url(),
   url: z.string().url(),
-
+  model: ModelsEnum,
   openaiKey: z.string(),
   notionKey: z.string(),
 });
@@ -46,6 +55,7 @@ export default function Home() {
     defaultValues: {
       databaseUrl: "",
       url: "",
+      model: "gpt-3.5-turbo",
       openaiKey: "",
       notionKey: "",
     },
@@ -56,7 +66,13 @@ export default function Home() {
   const onSubmit = async (values: z.infer<typeof formSchema>) => {
     try {
       setLoading(true);
-      await crawl(values);
+      await crawl({
+        databaseUrl: values.databaseUrl.trim(),
+        url: values.url.trim(),
+        model: values.model,
+        openaiKey: values.openaiKey.trim(),
+        notionKey: values.notionKey.trim(),
+      });
       toast.success("Added the page to your DB!", {
         position: "bottom-center",
       });
@@ -124,6 +140,41 @@ export default function Home() {
                   <FormMessage />
                 </FormItem>
               )}
+            />
+
+            <FormField
+              control={form.control}
+              name="model"
+              render={({ field }) => {
+                console.log("field", field);
+                return (
+                  <FormItem>
+                    <FormLabel>GPT Model</FormLabel>
+                    <FormDescription>
+                      Accuracy is pretty random right now
+                    </FormDescription>
+                    <FormControl>
+                      <Select
+                        {...field}
+                        onValueChange={field.onChange}
+                        defaultValue={field.value}
+                      >
+                        <SelectTrigger className="">
+                          <SelectValue placeholder="Model" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          {models.map((model) => (
+                            <SelectItem key={model} value={model}>
+                              {model}
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                );
+              }}
             />
 
             <FormField
